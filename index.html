@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sommelier Virtuale — Vineria Laparelli</title>
+
+  <!-- Font Google: Cormorant per i titoli eleganti, Montserrat per il corpo -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome per le icone (bottiglia di vino, social ecc.) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <!-- Il nostro CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- =====================================================
+    LOADING SCREEN
+    Mostrata all'avvio mentre Three.js carica la scena.
+    Viene nascosta via JS dopo il primo render.
+  ====================================================== -->
+  <div id="loader">
+    <div class="loader-title">Vineria Laparelli</div>
+    <div class="loader-bar"></div>
+  </div>
+
+
+  <!-- =====================================================
+    CANVAS CONTAINER
+    Div vuoto che conterrà il canvas WebGL di Three.js.
+    Posizionato fisso, copre tutto lo schermo, z-index basso
+    così l'interfaccia HTML ci va sopra.
+  ====================================================== -->
+  <div id="canvas-wrap"></div>
+
+
+  <!-- =====================================================
+    UI OVERLAY
+    Tutto il markup HTML che si sovrappone alla scena 3D.
+    pointer-events: none sul contenitore padre (via CSS),
+    poi riabilitati solo sugli elementi interattivi figli.
+  ====================================================== -->
+  <div id="ui">
+
+    <!-- HEADER -->
+    <header class="header">
+      <a href="https://alessandromeuccido.github.io/vineria-laparelli" class="back-link">
+        ← Vineria Laparelli
+      </a>
+      <div class="header-title">
+        Sommelier <em>Virtuale</em>
+      </div>
+      <!-- Spacer per centrare il titolo -->
+      <div class="header-spacer"></div>
+    </header>
+
+
+    <!-- PANNELLO SELEZIONE VINI (sinistra) -->
+    <div class="wine-panel">
+      <div class="panel-heading">La Nostra Selezione</div>
+
+      <!-- Categoria: Rossi -->
+      <div class="wine-cat">
+        <div class="wine-cat-label">Vini Rossi</div>
+        <button class="wine-btn active" data-wine="0">Cesanese del Piglio</button>
+        <button class="wine-btn"        data-wine="1">Montepulciano d'Abruzzo</button>
+        <button class="wine-btn"        data-wine="2">Nero d'Avola</button>
+      </div>
+
+      <!-- Categoria: Bianchi -->
+      <div class="wine-cat">
+        <div class="wine-cat-label">Vini Bianchi</div>
+        <button class="wine-btn" data-wine="3">Frascati Superiore</button>
+        <button class="wine-btn" data-wine="4">Trebbiano del Lazio</button>
+        <button class="wine-btn" data-wine="5">Verdicchio dei Castelli</button>
+      </div>
+    </div>
+
+
+    <!-- TOOLTIP HOVER
+      Appare vicino al cursore quando il mouse passa sopra
+      la bottiglia 3D. Popolato e posizionato via JS (Raycaster).
+    -->
+    <div id="tooltip">
+      <div id="tt-name"></div>
+      <div id="tt-year"></div>
+      <div id="tt-hint">Ruota · Zoom</div>
+    </div>
+
+
+    <!-- BARRA DETTAGLI (basso)
+      Mostra le informazioni del vino selezionato.
+      I contenuti vengono aggiornati via JS al cambio di vino.
+    -->
+    <div class="detail-bar">
+      <div class="detail-item">
+        <div class="detail-lbl">Produttore</div>
+        <div class="detail-val" id="d-produttore">—</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-lbl">Annata</div>
+        <div class="detail-val" id="d-anno">—</div>
+      </div>
+      <div class="detail-item">
+        <div id="d-note"></div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-lbl">Sfuso / Bottiglia</div>
+        <div class="detail-val" id="d-prezzo">—</div>
+      </div>
+    </div>
+
+
+    <!-- HINT LATERALE (destra) — testo verticale decorativo -->
+    <div class="hint">Trascina · Scorri · Esplora</div>
+
+  </div><!-- fine #ui -->
+
+
+  <!-- =====================================================
+    IMPORTMAP — dice al browser dove trovare Three.js
+    Deve stare PRIMA dello script type="module"
+  ====================================================== -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three":          "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/":  "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <!-- Il nostro JS (type="module" per usare gli import) -->
+  <script type="module" src="script.js"></script>
+
+</body>
+</html>
