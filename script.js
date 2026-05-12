@@ -65,6 +65,7 @@ document.getElementById('canvas-wrap').appendChild(renderer.domElement);
    3. SCENE
    ===================================================== */
 // Colore di sfondo: quasi-nero con tono viola scuro
+const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x06040A);
  
 // Fog esponenziale: gli oggetti lontani svaniscono
