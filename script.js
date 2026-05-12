@@ -96,7 +96,7 @@ controls.addEventListener('start', () => { userDragging = true;  });
 controls.addEventListener('end',   () => { userDragging = false; });
 
 /* =====================================================
-   6. ILLUMINAZIONE
+   6. LIGHTS
    ===================================================== */
 scene.add(new THREE.AmbientLight(0xfff0e0, 0.4));
 
@@ -114,3 +114,18 @@ scene.add(fillLight);
 const rimLight = new THREE.DirectionalLight(0xffffff, 2.0);
 rimLight.position.set(0, 2, -6);
 scene.add(rimLight);
+
+/* =====================================================
+   6. FLOOR
+   ===================================================== */
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(30, 30),
+  new THREE.MeshStandardMaterial({
+    color:  0x0a0808,
+    roughness: 0.3,
+    metalness: 0.9,
+  })
+);
+floor.rotation.x = -Math.PI / 2;
+floor.receiveShadow = true;
+scene.add(floor);
