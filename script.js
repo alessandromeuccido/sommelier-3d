@@ -116,8 +116,8 @@ rimLight.position.set(0, 2, -6);
 scene.add(rimLight);
 
 /* =====================================================
-   6. FLOOR
-   ===================================================== */
+   7. FLOOR
+===================================================== */
 const floor = new THREE.Mesh(
   new THREE.PlaneGeometry(30, 30),
   new THREE.MeshStandardMaterial({
@@ -129,3 +129,7 @@ const floor = new THREE.Mesh(
 floor.rotation.x = -Math.PI / 2;
 floor.receiveShadow = true;
 scene.add(floor);
+
+/* =====================================================
+   8. BOTTLES GEOMETRY
+===================================================== */
