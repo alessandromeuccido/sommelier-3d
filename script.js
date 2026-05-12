@@ -94,3 +94,23 @@ controls.minPolarAngle = Math.PI * 0.08;
 let userDragging = false;
 controls.addEventListener('start', () => { userDragging = true;  });
 controls.addEventListener('end',   () => { userDragging = false; });
+
+/* =====================================================
+   6. ILLUMINAZIONE
+   ===================================================== */
+scene.add(new THREE.AmbientLight(0xfff0e0, 0.4));
+
+const keyLight = new THREE.DirectionalLight(0xffddb0, 3.0);
+keyLight.position.set(3, 6, 4);
+keyLight.castShadow = true;
+keyLight.shadow.mapSize.set(1024, 1024);
+
+scene.add(keyLight);
+
+const fillLight = new THREE.DirectionalLight(0xb0c8ff, 1.0);
+fillLight.position.set(-5, 3, 2);
+scene.add(fillLight);
+
+const rimLight = new THREE.DirectionalLight(0xffffff, 2.0);
+rimLight.position.set(0, 2, -6);
+scene.add(rimLight);
