@@ -93,3 +93,27 @@ const camera = new THREE.PerspectiveCamera(
  
 // Posizione iniziale: leggermente elevata e indietro
 camera.position.set(0, 1.6, 5.5);
+
+/* =====================================================
+   5. ORBIT CONTROLS
+   ===================================================== */
+ 
+const controls = new OrbitControls(camera, renderer.domElement);
+ 
+controls.enableDamping = true;   // inerzia fluida al rilascio
+controls.dampingFactor = 0.06;
+ 
+// Il punto attorno a cui orbita la camera
+// lo impostiamo al centro della bottiglia
+controls.target.set(0, 1.6, 0);
+ 
+controls.minDistance = 2.2;              // zoom in massimo
+controls.maxDistance = 9.0;             // zoom out massimo
+controls.maxPolarAngle = Math.PI * 0.88; // non scende sotto il pavimento
+controls.minPolarAngle = Math.PI * 0.08; // non sale troppo in alto
+ 
+// Tracciamo se l'utente sta draggando
+// per mettere in pausa l'auto-rotazione
+let userDragging = false;
+controls.addEventListener('start', () => { userDragging = true;  });
+controls.addEventListener('end',   () => { userDragging = false; });
