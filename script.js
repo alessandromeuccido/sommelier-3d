@@ -72,6 +72,7 @@ scene.background = new THREE.Color(0x06040A);
 // Secondo parametro (0.06) = densità
 scene.fog = new THREE.FogExp2(0x06040A, 0.06);
 
+
 /* =====================================================
    4. CAMERA
    PerspectiveCamera simula la visione umana con
