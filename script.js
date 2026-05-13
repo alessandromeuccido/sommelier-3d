@@ -133,3 +133,31 @@ scene.add(floor);
 /* =====================================================
    8. BOTTLES GEOMETRY
 ===================================================== */
+function makeBottleGeometry() {
+  const profile = [
+    [0.000, 0.000],  // centro base — chiude il fondo
+    [0.240, 0.000],  // bordo interno base
+    [0.295, 0.025],  // smussatura base
+    [0.325, 0.080],
+    [0.348, 0.160],  // inizio corpo
+    [0.358, 0.450],
+    [0.363, 0.920],  // punto più largo
+    [0.363, 1.650],
+    [0.360, 1.950],  // inizio spalla
+    [0.340, 2.080],
+    [0.295, 2.220],  // rastrematura spalla
+    [0.162, 2.500],  // base collo
+    [0.138, 2.640],
+    [0.130, 2.920],  // collo
+    [0.132, 3.060],
+    [0.142, 3.130],  // anello 
+    [0.150, 3.165],
+    [0.140, 3.200],
+    [0.130, 3.220],  // apertura bottiglie
+  ].map(([r, y]) => new THREE.Vector2(r, y));
+    return new THREE.LatheGeometry(profile, 64);
+}
+
+/* =====================================================
+   9. LABLES
+===================================================== */
