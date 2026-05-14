@@ -336,5 +336,25 @@ rebuildBottle(WINES[0]);
 scene.add(bottleGroup);
 
 /* =====================================================
-   11. PARTICLES  
+   11. RENDER LOOP  
 ===================================================== */
+const clock = new THREE.Clock();
+
+function tick() {
+  requestAnimationFrame(tick);
+  const dt = clock.getDelta();
+  bottleGroup.rotation.y += dt * 0.18;
+    if (!userDragging) {
+    bottleGroup.rotation.y += dt * 0.18;
+    }
+
+    controls.update();
+
+    renderer.render(scene, camera);
+}
+
+tick();
+
+setTimeout(() => {
+  document.getElementById('loader').classList.add('hide');
+}, 900);
