@@ -336,6 +336,36 @@ rebuildBottle(WINES[0]);
 scene.add(bottleGroup);
 
 /* =====================================================
+   13. PARTICLES
+   ===================================================== */
+ 
+const PARTICLE_COUNT = 100;
+ 
+// Float32Array è un array tipizzato — più efficiente
+// per la GPU rispetto a un array JS normale
+const positions = new Float32Array(PARTICLE_COUNT * 3);
+ 
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  positions[i * 3 + 0] = (Math.random() - 0.5) * 14; // x
+  positions[i * 3 + 1] =  Math.random()        * 7;  // y
+  positions[i * 3 + 2] = (Math.random() - 0.5) * 10; // z
+}
+ 
+const particleGeo = new THREE.BufferGeometry();
+particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+ 
+const particles = new THREE.Points(
+  particleGeo,
+  new THREE.PointsMaterial({
+    color:       0xC9A84C,  // oro
+    size:        0.018,
+    transparent: true,
+    opacity:     0.35,
+  })
+);
+scene.add(particles);
+
+/* =====================================================
    11. RENDER LOOP  
 ===================================================== */
 const clock = new THREE.Clock();
