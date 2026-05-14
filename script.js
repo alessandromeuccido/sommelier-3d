@@ -119,7 +119,7 @@ scene.add(rimLight);
    7. FLOOR
 ===================================================== */
 const floor = new THREE.Mesh(
-  new THREE.CircleGeometry(6, 64),
+  new THREE.CircleGeometry(3, 64),
   new THREE.MeshStandardMaterial({
     color:  0x0a0808,
     roughness: 0.3,
@@ -362,7 +362,7 @@ scene.add(bottleGroup);
    PARTICLES
    ===================================================== */
  
-const PARTICLE_COUNT = 200;
+const PARTICLE_COUNT = 1000;
  
 const positions = new Float32Array(PARTICLE_COUNT * 3);
  
@@ -371,6 +371,11 @@ for (let i = 0; i < PARTICLE_COUNT; i++) {
   positions[i * 3 + 1] =  Math.random()        * 7;  // y
   positions[i * 3 + 2] = (Math.random() - 0.5) * 10; // z
 }
+
+const velocities = new Float32Array(PARTICLE_COUNT);
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  velocities[i] = 1.5 + Math.random() * 2.0;
+}
  
 const particleGeo = new THREE.BufferGeometry();
 particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -378,10 +383,10 @@ particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 const particles = new THREE.Points(
   particleGeo,
   new THREE.PointsMaterial({
-    color:       0xC9A84C,  // oro
-    size:        0.018,
+    color:       0x8B1A1A,   // rosso bordeaux
+    size:        0.045,      // più grandi
     transparent: true,
-    opacity:     0.35,
+    opacity:     0.6,
   })
 );
 scene.add(particles);
@@ -474,8 +479,20 @@ function tick() {
     bottleGroup.scale.setScalar(1); // assicura che torni esattamente a 1
   }
  
-  // — Rotazione lenta delle particelle —
-  particles.rotation.y += dt * 0.018;
+  const posArray = particleGeo.attributes.position.array;
+
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  // Abbassa ogni goccia in base alla sua velocità
+  posArray[i * 3 + 1] -= velocities[i] * dt;
+
+  // Se la goccia esce dal basso, la resetta in cima
+  if (posArray[i * 3 + 1] < -1) {
+    posArray[i * 3 + 1] = 7;
+  }
+}
+
+// Dice a Three.js che le posizioni sono cambiate
+particleGeo.attributes.position.needsUpdate = true;
  
   // — Raycaster hover check —
   raycaster.setFromCamera(mouse, camera);
