@@ -289,4 +289,52 @@ function makeCork() {
   mesh.castShadow = true;
   return mesh;
 }
+
+/* =====================================================
+   9. GROUP BOTTLES 
+===================================================== */
+const bottleGroup = new THREE.Group();
+let bottleMesh = null;
+let labelMesh  = null;
+let corkMesh   = null;
  
+function rebuildBottle(wine) {
+
+  while (bottleGroup.children.length > 0) {
+    const child = bottleGroup.children[0];
+    if (child.geometry) child.geometry.dispose();
+    if (child.material) child.material.dispose();
+    bottleGroup.remove(child);
+  }
+
+
+  bottleMesh = new THREE.Mesh(
+    makeBottleGeometry(),
+    new THREE.MeshPhysicalMaterial({
+      color:              new THREE.Color(wine.bottleHex),
+      transparent:        true,
+      opacity:            0.90,
+      roughness:          0.06,  // quasi specchio
+      metalness:          0.05,
+      transmission:       0.18,  // quanto luce passa ATTRAVERSO il vetro
+      thickness:          0.9,   // spessore percepito del vetro
+      ior:                1.52,  // Indice di rifrazione (vetro reale = ~1.5)
+      clearcoat:          1.0,   // strato lucido superficiale
+      clearcoatRoughness: 0.04,
+    })
+  );
+  bottleMesh.castShadow    = true;
+  bottleMesh.receiveShadow = true;
+ 
+  labelMesh = makeLabel(wine);
+  corkMesh  = makeCork();
+ 
+  bottleGroup.add(bottleMesh, labelMesh, corkMesh);
+}
+ 
+rebuildBottle(WINES[0]);
+scene.add(bottleGroup);
+
+/* =====================================================
+   11. PARTICLES  
+===================================================== */
