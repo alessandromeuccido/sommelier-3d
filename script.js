@@ -276,3 +276,17 @@ const ctx = cv.getContext('2d');
  
   return mesh;
 }
+
+/* =====================================================
+   9. CORK
+===================================================== */
+function makeCork() {
+  const mesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.125, 0.128, 0.22, 24),
+    new THREE.MeshStandardMaterial({ color: '#c4956a', roughness: 0.80 })
+  );
+  mesh.position.y = 3.21;
+  mesh.castShadow = true;
+  return mesh;
+}
+ 
