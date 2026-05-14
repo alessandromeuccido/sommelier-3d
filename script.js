@@ -263,17 +263,23 @@ const ctx = cv.getContext('2d');
   ctx.font      = '600 24px Georgia, serif';
   ctx.fillText(wine.prezzo, W / 2, H - 44);
  
-  // — Converti il canvas in texture Three.js —
-  const texture = new THREE.CanvasTexture(cv);
- 
-  // Piazzalo davanti alla bottiglia (z leggermente avanzato)
-  const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.64, 0.96),
-    new THREE.MeshStandardMaterial({ map: texture, roughness: 0.85 })
-  );
-  mesh.position.set(0, 1.25, 0.366);
-  mesh.castShadow = true;
- 
+const texture = new THREE.CanvasTexture(cv);
+
+const bottleR = 0.364;           // raggio bottiglia + tiny offset anti z-fight
+const labelArc = 0.64 / bottleR; // ampiezza arco in radianti
+const mesh = new THREE.Mesh(
+  new THREE.CylinderGeometry(
+    bottleR, bottleR,             // radiusTop, radiusBottom
+    0.96,                         // height
+    32,                           // radialSegments
+    1,                            // heightSegments
+    true,                         // openEnded
+    Math.PI / 2 - labelArc / 2,  // thetaStart (centrato verso +Z)
+    labelArc                      // thetaLength
+  ),
+  new THREE.MeshStandardMaterial({ map: texture, roughness: 0.85, side: THREE.FrontSide })
+);
+mesh.position.set(0, 1.25, 0);   // centro bottiglia, niente offset Z
   return mesh;
 }
 
