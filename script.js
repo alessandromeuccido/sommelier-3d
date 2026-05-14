@@ -100,18 +100,18 @@ controls.addEventListener('end',   () => { userDragging = false; });
    ===================================================== */
 scene.add(new THREE.AmbientLight(0xfff0e0, 0.4));
 
-const keyLight = new THREE.DirectionalLight(0xffddb0, 3.0);
+const keyLight = new THREE.DirectionalLight(0xffddb0, 6.0);
 keyLight.position.set(3, 6, 4);
 keyLight.castShadow = true;
 keyLight.shadow.mapSize.set(1024, 1024);
 
 scene.add(keyLight);
 
-const fillLight = new THREE.DirectionalLight(0xb0c8ff, 1.0);
+const fillLight = new THREE.DirectionalLight(0xb0c8ff, 2.0);
 fillLight.position.set(-5, 3, 2);
 scene.add(fillLight);
 
-const rimLight = new THREE.DirectionalLight(0xffffff, 2.0);
+const rimLight = new THREE.DirectionalLight(0xffffff, 4.0);
 rimLight.position.set(0, 2, -6);
 scene.add(rimLight);
 
@@ -119,7 +119,7 @@ scene.add(rimLight);
    7. FLOOR
 ===================================================== */
 const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(30, 30),
+  new THREE.CircleGeometry(6, 64),
   new THREE.MeshStandardMaterial({
     color:  0x0a0808,
     roughness: 0.3,
@@ -313,6 +313,23 @@ function rebuildBottle(wine) {
     bottleGroup.remove(child);
   }
 
+  const wineColor = wine.type === 'rosso' ? '#4a0a0a' : '#c8a84b';
+  const liquidMesh = new THREE.Mesh(
+  new THREE.CylinderGeometry(
+    0.34,   // raggio superiore (leggermente dentro le pareti)
+    0.34,   // raggio inferiore
+    1.6,    // altezza — riempie circa metà bottiglia
+    32
+  ),
+  new THREE.MeshPhysicalMaterial({
+    color:       wineColor,
+    transparent: true,
+    opacity:     0.85,
+    roughness:   0.0,
+    transmission: 0.3,
+  })
+);
+liquidMesh.position.y =  1.05; // dal fondo verso su
 
   bottleMesh = new THREE.Mesh(
     makeBottleGeometry(),
@@ -335,7 +352,7 @@ function rebuildBottle(wine) {
   labelMesh = makeLabel(wine);
   corkMesh  = makeCork();
  
-  bottleGroup.add(bottleMesh, labelMesh, corkMesh);
+  bottleGroup.add(liquidMesh, bottleMesh, labelMesh, corkMesh);
 }
  
 rebuildBottle(WINES[0]);
@@ -345,7 +362,7 @@ scene.add(bottleGroup);
    PARTICLES
    ===================================================== */
  
-const PARTICLE_COUNT = 20000;
+const PARTICLE_COUNT = 200;
  
 const positions = new Float32Array(PARTICLE_COUNT * 3);
  
