@@ -339,7 +339,7 @@ scene.add(bottleGroup);
    PARTICLES
    ===================================================== */
  
-const PARTICLE_COUNT = 100;
+const PARTICLE_COUNT = 20000;
  
 const positions = new Float32Array(PARTICLE_COUNT * 3);
  
