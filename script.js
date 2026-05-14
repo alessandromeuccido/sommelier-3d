@@ -131,7 +131,7 @@ floor.receiveShadow = true;
 scene.add(floor);
 
 /* =====================================================
-   8. BOTTLES GEOMETRY
+BOTTLES GEOMETRY
 ===================================================== */
 function makeBottleGeometry() {
   const profile = [
@@ -159,7 +159,7 @@ function makeBottleGeometry() {
 }
 
 /* =====================================================
-   9. LABLES
+LABLES
 ===================================================== */
 function makeLabel(wine) {
 const W = 512, H = 768;
@@ -278,7 +278,7 @@ const ctx = cv.getContext('2d');
 }
 
 /* =====================================================
-   9. CORK
+CORK
 ===================================================== */
 function makeCork() {
   const mesh = new THREE.Mesh(
@@ -291,7 +291,7 @@ function makeCork() {
 }
 
 /* =====================================================
-   9. GROUP BOTTLES 
+  GROUP BOTTLES 
 ===================================================== */
 const bottleGroup = new THREE.Group();
 let bottleMesh = null;
@@ -336,7 +336,7 @@ rebuildBottle(WINES[0]);
 scene.add(bottleGroup);
 
 /* =====================================================
-   13. PARTICLES
+   PARTICLES
    ===================================================== */
  
 const PARTICLE_COUNT = 100;
@@ -366,7 +366,38 @@ const particles = new THREE.Points(
 scene.add(particles);
 
 /* =====================================================
-   11. RENDER LOOP  
+  RAYCASTER
+   ===================================================== */
+ 
+const raycaster = new THREE.Raycaster();
+ 
+// Coordinata del mouse in NDC (Normalized Device Coordinates)
+// Range: da -1 a +1 su entrambi gli assi
+// Inizializzato fuori schermo per evitare hover falso all'avvio
+const mouse = new THREE.Vector2(-9, -9);
+ 
+// Elementi HTML del tooltip
+const tooltipEl = document.getElementById('tooltip');
+const ttName    = document.getElementById('tt-name');
+const ttYear    = document.getElementById('tt-year');
+ 
+let isHovering = false;
+ 
+window.addEventListener('mousemove', (e) => {
+  // Converti coordinate pixel → NDC
+  // X: 0..innerWidth  → -1..+1
+  // Y: 0..innerHeight → +1..-1  (Y invertita in WebGL!)
+  mouse.x =  (e.clientX / window.innerWidth)  * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+ 
+  // Sposta il tooltip vicino al cursore
+  tooltipEl.style.left = (e.clientX + 18) + 'px';
+  tooltipEl.style.top  = (e.clientY - 14) + 'px';
+});
+ 
+
+/* =====================================================
+  RENDER LOOP  
 ===================================================== */
 const clock = new THREE.Clock();
 
