@@ -341,8 +341,6 @@ scene.add(bottleGroup);
  
 const PARTICLE_COUNT = 100;
  
-// Float32Array è un array tipizzato — più efficiente
-// per la GPU rispetto a un array JS normale
 const positions = new Float32Array(PARTICLE_COUNT * 3);
  
 for (let i = 0; i < PARTICLE_COUNT; i++) {
@@ -370,13 +368,7 @@ scene.add(particles);
    ===================================================== */
  
 const raycaster = new THREE.Raycaster();
- 
-// Coordinata del mouse in NDC (Normalized Device Coordinates)
-// Range: da -1 a +1 su entrambi gli assi
-// Inizializzato fuori schermo per evitare hover falso all'avvio
 const mouse = new THREE.Vector2(-9, -9);
- 
-// Elementi HTML del tooltip
 const tooltipEl = document.getElementById('tooltip');
 const ttName    = document.getElementById('tt-name');
 const ttYear    = document.getElementById('tt-year');
@@ -384,17 +376,51 @@ const ttYear    = document.getElementById('tt-year');
 let isHovering = false;
  
 window.addEventListener('mousemove', (e) => {
-  // Converti coordinate pixel → NDC
-  // X: 0..innerWidth  → -1..+1
-  // Y: 0..innerHeight → +1..-1  (Y invertita in WebGL!)
+
   mouse.x =  (e.clientX / window.innerWidth)  * 2 - 1;
   mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
- 
-  // Sposta il tooltip vicino al cursore
+
   tooltipEl.style.left = (e.clientX + 18) + 'px';
   tooltipEl.style.top  = (e.clientY - 14) + 'px';
 });
  
+
+/* =====================================================
+WINE SELECTION
+   ===================================================== */
+ 
+let currentWine  = WINES[0];
+let bounceTimer  = 0; 
+ 
+
+function updateDetailBar(wine) {
+  document.getElementById('d-produttore').textContent = wine.produttore;
+  document.getElementById('d-anno').textContent       = wine.anno;
+  document.getElementById('d-note').textContent       = wine.note;
+  document.getElementById('d-prezzo').textContent     = wine.prezzo;
+}
+ 
+function selectWine(wine) {
+  if (wine.id === currentWine.id) return;
+ 
+  currentWine = wine;
+  rebuildBottle(wine);  
+  updateDetailBar(wine); 
+ 
+  bounceTimer = 1;       
+ 
+  document.querySelectorAll('.wine-btn').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.wine) === wine.id);
+  });
+}
+ 
+document.querySelectorAll('.wine-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    selectWine(WINES[parseInt(btn.dataset.wine)]);
+  });
+});
+ 
+updateDetailBar(WINES[0]);
 
 /* =====================================================
   RENDER LOOP  
@@ -403,18 +429,66 @@ const clock = new THREE.Clock();
 
 function tick() {
   requestAnimationFrame(tick);
+ 
+  // getDelta() → secondi trascorsi dall'ultimo frame
+  // Usarlo per le animazioni le rende frame-rate independent:
+  // a 30fps o 144fps la velocità è sempre la stessa
   const dt = clock.getDelta();
-  bottleGroup.rotation.y += dt * 0.18;
-    if (!userDragging) {
+ 
+  // — Auto-rotazione —
+  // Si ferma quando l'utente interagisce con OrbitControls
+  if (!userDragging) {
     bottleGroup.rotation.y += dt * 0.18;
-    }
-
+  }
+ 
+  // — Bounce al cambio vino —
+  if (bounceTimer > 0) {
+    bounceTimer -= dt * 4.5;
+    const scale = 1 + 0.06 * Math.sin(bounceTimer * Math.PI) * bounceTimer;
+    bottleGroup.scale.setScalar(scale);
+  } else {
+    bounceTimer = 0;
+    bottleGroup.scale.setScalar(1); // assicura che torni esattamente a 1
+  }
+ 
+  // — Rotazione lenta delle particelle —
+  particles.rotation.y += dt * 0.018;
+ 
+  // — Raycaster hover check —
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObjects([bottleMesh, labelMesh, corkMesh]);
+ 
+  if (hits.length > 0 && !isHovering) {
+    // Mouse appena entrato sulla bottiglia
+    isHovering = true;
+    ttName.textContent = currentWine.name;
+    ttYear.textContent = currentWine.anno + '  ·  ' + currentWine.produttore;
+    tooltipEl.classList.add('show');
+  } else if (hits.length === 0 && isHovering) {
+    // Mouse appena uscito dalla bottiglia
+    isHovering = false;
+    tooltipEl.classList.remove('show');
+  }
     controls.update();
-
     renderer.render(scene, camera);
 }
 
 tick();
+
+/* =====================================================
+   17. RESIZE
+   ===================================================== */
+ 
+window.addEventListener('resize', () => {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+ 
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix(); // applica il nuovo aspect
+ 
+  renderer.setSize(w, h);
+});
+ 
 
 setTimeout(() => {
   document.getElementById('loader').classList.add('hide');
