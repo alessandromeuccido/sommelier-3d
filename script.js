@@ -161,3 +161,118 @@ function makeBottleGeometry() {
 /* =====================================================
    9. LABLES
 ===================================================== */
+function makeLabel(wine) {
+const W = 512, H = 768;
+const cv = document.createElement('canvas');
+cv.width = W;
+cv.height = H;
+const ctx = cv.getContext('2d');
+
+  const isRed = wine.type === 'rosso';
+ 
+  // — Sfondo carta con gradiente —
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, isRed ? '#f8eedf' : '#f5f2e8');
+  bg.addColorStop(1, isRed ? '#eddfc5' : '#e8e4cc');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+ 
+  // — Bordi decorativi —
+  ctx.strokeStyle = wine.labelAccent;
+  ctx.lineWidth   = 7;
+  ctx.strokeRect(12, 12, W - 24, H - 24);  // bordo esterno
+  ctx.lineWidth = 1.2;
+  ctx.strokeRect(20, 20, W - 40, H - 40);  // bordo interno
+ 
+  // — "VINERIA LAPARELLI" in cima —
+  ctx.fillStyle  = wine.labelAccent;
+  ctx.font       = '600 30px Georgia, serif';
+  ctx.textAlign  = 'center';
+  ctx.fillText('VINERIA  LAPARELLI', W / 2, 72);
+ 
+  // — Doppie righe decorative —
+  ctx.lineWidth = 1;
+  [90, 96].forEach(y => {
+    ctx.beginPath();
+    ctx.moveTo(40, y); ctx.lineTo(W - 40, y);
+    ctx.stroke();
+  });
+ 
+  // — Nome del vino con word-wrap manuale —
+  // measureText() misura la larghezza del testo
+  // prima di scriverlo, così andiamo a capo automaticamente
+  ctx.fillStyle = '#120a04';
+  const fontSize = wine.name.length > 18 ? 36 : 42;
+  ctx.font = `italic ${fontSize}px Georgia, serif`;
+ 
+  const maxW   = W - 90;
+  const words  = wine.name.split(' ');
+  let lines    = [];
+  let current  = '';
+ 
+  words.forEach(word => {
+    const test = current ? current + ' ' + word : word;
+    if (ctx.measureText(test).width > maxW) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = test;
+    }
+  });
+  lines.push(current);
+ 
+  const lineH = fontSize * 1.3;
+  let nameY   = 210 - (lines.length * lineH) / 2 + lineH;
+  lines.forEach(line => {
+    ctx.fillText(line, W / 2, nameY);
+    nameY += lineH;
+  });
+ 
+  // — Riga separatrice centrale —
+  ctx.strokeStyle = wine.labelAccent;
+  ctx.beginPath();
+  ctx.moveTo(70, 310); ctx.lineTo(W - 70, 310);
+  ctx.stroke();
+ 
+  // — Tipo (ROSSO / BIANCO) e Annata —
+  ctx.fillStyle = wine.labelAccent;
+  ctx.font      = '600 22px Georgia, serif';
+  ctx.fillText(isRed ? '— ROSSO —' : '— BIANCO —', W / 2, 348);
+ 
+  ctx.fillStyle = '#666';
+  ctx.font      = '400 26px Georgia, serif';
+  ctx.fillText(wine.anno, W / 2, 395);
+ 
+  // — Sezione bassa: produttore e prezzo —
+  ctx.strokeStyle = wine.labelAccent;
+  ctx.beginPath();
+  ctx.moveTo(40, H - 150); ctx.lineTo(W - 40, H - 150);
+  ctx.stroke();
+ 
+  ctx.fillStyle = '#333';
+  ctx.font      = '400 20px Helvetica Neue, sans-serif';
+  ctx.fillText(wine.produttore, W / 2, H - 100);
+ 
+  // Pallino decorativo
+  ctx.fillStyle = wine.labelAccent;
+  ctx.beginPath();
+  ctx.arc(W / 2, H - 68, 3, 0, Math.PI * 2);
+  ctx.fill();
+ 
+  ctx.fillStyle = wine.labelAccent;
+  ctx.font      = '600 24px Georgia, serif';
+  ctx.fillText(wine.prezzo, W / 2, H - 44);
+ 
+  // — Converti il canvas in texture Three.js —
+  const texture = new THREE.CanvasTexture(cv);
+ 
+  // Piazzalo davanti alla bottiglia (z leggermente avanzato)
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.64, 0.96),
+    new THREE.MeshStandardMaterial({ map: texture, roughness: 0.85 })
+  );
+  mesh.position.set(0, 1.25, 0.366);
+  mesh.castShadow = true;
+ 
+  return mesh;
+}
